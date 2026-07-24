@@ -1,7 +1,7 @@
 Getting started with AMD ROCm
 =========================================
 
-Last updated: 07/20/2026.
+Last updated: 07/24/2026.
 
 Author: `Mingjie Lu <https://github.com/mingjielu>`_, `Xiaohong Kou <https://github.com/xiaohong42>`_, `Fuwei Yang <https://github.com/amd-fuweiy>`_, `Zhaodong Bing <https://github.com/aaab8b>`_
 
@@ -27,7 +27,7 @@ Software Baseline
 
 Use the following prebuilt image for tutorial and validation:
 
-- ``amdagi/verl-dev:rocm7.14_torch2.12_vllm0.22.1_0708``
+- ``amdagi/verl-dev:rocm7.14_torch2.12_release_0724``
 
 The Docker build recipe remains unchanged:
 
@@ -48,7 +48,7 @@ Launch Container
 .. code-block:: bash
 
     NAME=verl_release
-    DOCKER=amdagi/verl-dev:rocm7.14_torch2.12_vllm0.22.1_0708
+    DOCKER=amdagi/verl-dev:rocm7.14_torch2.12_release_0724
 
     docker pull $DOCKER
 
@@ -132,23 +132,24 @@ Example Workflow
      - SGLang
      - FSDP
      - `bash examples/grpo_trainer/run_qwen3_8b_fsdp.sh <../../examples/grpo_trainer/run_qwen3_8b_fsdp.sh>`_ (vllm->sglang)
+   * - Colocate
+     - SGLang
+     - Megatron
+     - `bash examples/grpo_trainer/run_qwen3_8b_megatron.sh <../../examples/grpo_trainer/run_qwen3_8b_megatron.sh>`_ (vllm->sglang)
    * - Fully Async
      - SGLang
      - FSDP2
      -  `bash verl/experimental/fully_async_policy/shell/dapo_7b_math_fsdp2_4_4.sh <../../verl/experimental/fully_async_policy/shell/dapo_7b_math_fsdp2_4_4.sh>`_ (vllm->sglang)
-
+   * - Fully Async
+     - SGLang
+     - Megatron
+     -  `bash verl/experimental/fully_async_policy/shell/geo3k_qwen25vl_7b_megatron_4_4.sh <../../verl/experimental/fully_async_policy/shell/geo3k_qwen25vl_7b_megatron_4_4.sh>`_ (vllm->sglang)
+   
+   
 
 
 Known Issues
 ----------------
-1. ``PYTORCH_ALLOC_CONF=expandable_segments:True`` is set by default in ``Dockerfile.rocm`` to prevent out-of-memory (OOM) errors. However, this setting may conflict with ``vllm_custom_all_reduce``, so we set ``vllm.disable_custom_all_reduce=True`` in ``config.yaml`` by default.
+1. ``PYTORCH_ALLOC_CONF=expandable_segments:True`` is set by default in ``Dockerfile.rocm`` to prevent out-of-memory (OOM) errors. However, this setting may conflict with ``vllm_custom_all_reduce``, so we set ``vllm.disable_custom_all_reduce=True`` in ``config.yaml`` by default. This issue will be removed in the future once ROCm resolves the underlying conflict.
 2. ``SGLANG_ATTENTION_BACKEND=triton`` must be set for SGLang to use the Triton attention backend.
 
-To do list:
-----------------
-1. Add SGLang + Colocate mode + Megatron (GRPO, Qwen3.5-35B) example.
-2. CH pr ？
-3. vllm 新版本/还是cherry pick？
-4. update dockerfile/image final.
-5. experimental curve?
-6. 重开一个branch，去掉历史commit，提pr
